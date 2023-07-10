@@ -40,21 +40,37 @@ function getOrders() {
   return [
     {
       id: 'fd105551-0f0d-4a9f-bc41-c559c8a17260',
-      client: 'John Doe',
-      address: '123 Main Street, London',
+      clientId: 'b84be0db-29f2-43fc-9e7a-295079e0f6d3',
       productId: 'fd105551-0f0d-4a9f-bc41-c559c8a17256',
     },
     {
       id: 'fd105551-0f0d-4a9f-bc41-c559c8a17261',
-      client: 'Jane Doe',
-      address: '123 Main Street, London',
+      clientId: 'd22c70c0-1b80-45ce-9a94-aa28e3d7516f',
       productId: 'fd105551-0f0d-4a9f-bc41-c559c8a17256',
     },
     {
       id: 'fd105551-0f0d-4a9f-bc41-c559c8a17262',
+      clientId: '52696e5d-b33d-4f16-a7ad-ee7e6a7c5b5d',
+      productId: '01c7599d-318b-4b9f-baf7-51f3a936a2d4',
+    },
+  ];
+}
+function getClients() {
+  return [
+    {
+      id: 'b84be0db-29f2-43fc-9e7a-295079e0f6d3',
+      client: 'John Doe',
+      address: '123 Main Street, London',
+    },
+    {
+      id: 'd22c70c0-1b80-45ce-9a94-aa28e3d7516f',
+      client: 'Jane Doe',
+      address: '123 Main Street, London',
+    },
+    {
+      id: '52696e5d-b33d-4f16-a7ad-ee7e6a7c5b5d',
       client: 'Thomas Jefferson',
       address: 'Baker Street 12B, New York',
-      productId: '01c7599d-318b-4b9f-baf7-51f3a936a2d4',
     },
   ];
 }
@@ -65,14 +81,22 @@ async function seed() {
       return db.product.create({ data: product });
     }),
   );
+  await Promise.all(
+    getClients().map((client) => {
+      return db.client.create({ data: client });
+    }),
+  );
 
   await Promise.all(
-    getOrders().map(({ productId, ...orderData }) => {
+    getOrders().map(({ productId, clientId, ...orderData }) => {
       return db.order.create({
         data: {
           ...orderData,
           product: {
             connect: { id: productId },
+          },
+          client: {
+            connect: { id: clientId },
           },
         },
       });
